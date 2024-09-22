@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SoulSpeak</title>
+  </head>
+  <body>
+    <style>
+      @keyframes loader {
+        0% {
+          transform: scale(1);
+        }
+        25% {
+          transform: scale(1.1);
+        }
+        50% {
+          transform: scale(1);
+        }
+        75% {
+          transform: scale(0.9);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* The element to apply the animation to */
+      .divLoader {
+        background-color: #141414;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .loader {
+        width: 40%;
+        animation-name: loader;
+        animation-duration: 4s;
+        border: none;
+        position: absolute;
+      }
+    </style>
+    <div id="root">
+      <div class="divLoader">
+        <img class="loader" src="Loader.svg" />
+      </div>
+    </div>
+    <script type="module" src="src/main.tsx"></script>
+  </body>
+</html>
