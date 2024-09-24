@@ -14,6 +14,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Login } from "../../types/auth";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../../store/auth";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,14 +34,24 @@ const LoginForm = () => {
   const {
     register,
     handleSubmit,
+    // reset,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
+
+  const { login } = useAuthStore();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleLogin = (data: Login) => {
-    console.log("Data", data);
     setIsLoading(true);
+    login(data)
+      .then(() => {
+        // reset()
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -129,7 +140,7 @@ const LoginForm = () => {
               </Typography>
               <Lines />
             </Box>
-            <GoogleButton />
+            <GoogleButton type="Login" />
             <Link
               to={"/Register"}
               style={{ textDecorationColor: "white", color: "white" }}

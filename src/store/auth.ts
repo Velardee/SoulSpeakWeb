@@ -1,12 +1,11 @@
 import { create } from 'zustand'
 import { AuthActions, authType, User } from '../types/auth'
 import { devtools, persist } from 'zustand/middleware'
-import { emailSignUp } from '../utils/firebase/firebaseAuth'
+import { emailLogin, emailSignUp, googleSignIn, googleSignUp } from '../utils/firebase/firebaseAuth'
 
 export const initialUser: User = {
     uuid: undefined,
-    name: undefined,
-    lastname: undefined,
+    username: undefined,
     email: undefined,
     photoURL: undefined,
     provider: undefined,
@@ -23,6 +22,9 @@ export const useAuthStore = create<authType & AuthActions>()(
             (set, get) => ({
                 ...initialState,
                 //Actions
+                reset() {
+                    set(initialState)
+                },
                 setUser(user) {
                     set({ user }, false, 'Auth/setUser')
                 },
@@ -38,7 +40,38 @@ export const useAuthStore = create<authType & AuthActions>()(
                     } else {
                         throw new Error("Registro fallido");
                     }
-                }
+                },
+                googleRegister: async () => {
+                    const { setUser, setToken } = get()
+
+                    const newUser = await googleSignUp()
+
+                    if (newUser) {
+                        const { user, token } = newUser;
+                        setUser(user)
+                        setToken(token)
+                    }
+                },
+                login: async (user) => {
+                    const { setUser, setToken } = get()
+                    const userLogin = await emailLogin(user)
+
+                    if (userLogin) {
+                        const { user, token } = userLogin
+                        setUser(user)
+                        setToken(token)
+                    }
+                },
+                googleLogin: async () => {
+                    const { setUser, setToken } = get()
+                    const userLogin = await googleSignIn()
+
+                    if (userLogin) {
+                        const { user, token } = userLogin
+                        setUser(user)
+                        setToken(token)
+                    }
+                },
             }),
             { name: "authStore" }
         )

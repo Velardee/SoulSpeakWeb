@@ -28,8 +28,7 @@ const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const schema = yup.object({
-    name: yup.string().required("Tu nombre es requerido"),
-    lastname: yup.string().required("Tu apellido es requerido"),
+    username: yup.string().required("Tu nombre es requerido"),
     email: yup
       .string()
       .email("Ingresa un correo electrónico válido.")
@@ -96,7 +95,7 @@ const RegisterForm = () => {
           <Box display="flex" flexDirection="column" gap={2}>
             <TextField
               fullWidth
-              label="Nombre"
+              label="Nombre de usuario"
               variant="outlined"
               autoComplete="off"
               type="email"
@@ -105,24 +104,9 @@ const RegisterForm = () => {
                   borderRadius: 5,
                 },
               }}
-              {...register("name")}
-              error={errors.name && true}
-              helperText={errors.name ? errors.name.message : ""}
-            />
-            <TextField
-              fullWidth
-              label="Apellido"
-              variant="outlined"
-              autoComplete="off"
-              type="email"
-              sx={{
-                ".MuiOutlinedInput-root": {
-                  borderRadius: 5,
-                },
-              }}
-              {...register("lastname")}
-              error={errors.lastname && true}
-              helperText={errors.lastname ? errors.lastname.message : ""}
+              {...register("username")}
+              error={errors.username && true}
+              helperText={errors.username ? errors.username.message : ""}
             />
             <TextField
               fullWidth
@@ -220,7 +204,7 @@ const RegisterForm = () => {
               </Typography>
               <Lines />
             </Box>
-            <GoogleButton />
+            <GoogleButton type="Register" />
             <Link
               to={"/"}
               style={{ textDecorationColor: "white", color: "white" }}

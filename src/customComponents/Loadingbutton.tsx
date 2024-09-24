@@ -1,4 +1,4 @@
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { FunctionComponent } from "react";
 
 interface LoadingButtonProps {
@@ -30,7 +30,9 @@ const LoadingButton: FunctionComponent<LoadingButtonProps> = ({
       }
       fullWidth
     >
-      {text}
+      <Typography variant="subtitle1" sx={{ fontWeight: "600", color: "#fff" }}>
+        {text}
+      </Typography>
     </Button>
   );
 };
