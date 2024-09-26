@@ -6,7 +6,6 @@ import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -19,6 +18,7 @@ import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuAvatar from "../MenuAvatar";
+import Textlogo from "../../assets/TextLogo";
 
 const drawerWidth = 240;
 
@@ -109,14 +109,20 @@ export default function PersistentDrawer({ children }: Props) {
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={[{ mr: 2 }, open && !isMdDown && { display: "none" }]}
+            sx={[
+              { mr: theme.breakpoints.up("md") ? 2 : 0 },
+              open && !isMdDown && { display: "none" },
+            ]}
           >
             <MenuIcon />
           </IconButton>
-          <Box display="flex" justifyContent="space-between" width="100%">
-            <Typography variant="h6" noWrap component="div">
-              Responsive Drawer
-            </Typography>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            width="100%"
+          >
+            <Textlogo width="140" height="40" />
             <MenuAvatar />
           </Box>
         </Toolbar>

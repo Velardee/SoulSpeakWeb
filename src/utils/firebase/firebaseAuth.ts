@@ -84,10 +84,21 @@ export const emailLogin = async (userToLogin: Login): Promise<UserLogged | null>
 }
 
 export const logOut = async () => {
-    const auth = getAuth();
-    const response = await signOut(auth)
+    try {
+        const auth = getAuth();
+        await signOut(auth)
+    } catch (error: unknown) {
+        if (error instanceof FirebaseError) {
+            const errorCode = error.code as FirebaseAuthErrorCode;
+            const errorMessage = firebaseAuthErrorMessages[errorCode] || 'Ocurrió un error inesperado.';
 
-    console.log(response)
+            enqueueSnackbar(errorMessage, { variant: 'error', autoHideDuration: 2000 });
+        } else {
+            console.error('Error desconocido:', error);
+        }
+        return null;
+    }
+
 }
 
 export const googleSignUp = async (): Promise<UserLogged | null> => {
@@ -130,11 +141,13 @@ export const googleSignUp = async (): Promise<UserLogged | null> => {
     }
 }
 
-export const googleSignIn = async (): Promise<UserLogged | null>  => {
+export const googleSignIn = async (): Promise<UserLogged | null> => {
     try {
         const provider = new GoogleAuthProvider()
         const userCredential = await signInWithPopup(auth, provider)
         const user = userCredential.user
+        const photo = user.photoURL ?? ""
+
         const token = await user.getIdToken()
 
         const docRef = doc(db, 'users', `${user.uid}`)
@@ -145,7 +158,8 @@ export const googleSignIn = async (): Promise<UserLogged | null>  => {
 
             const userToReturn = {
                 user: dbUser,
-                token
+                token,
+                photo
             }
             return userToReturn
         } else {

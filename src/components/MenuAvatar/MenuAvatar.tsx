@@ -4,15 +4,17 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-
-const settings = ["Profile", "Logout"];
+import { useAuthStore } from "../../store/auth";
+import { useNavigate } from "react-router-dom";
 
 const MenuAvatar = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
+  const { signOut, user } = useAuthStore();
+  const navigate = useNavigate();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -21,17 +23,26 @@ const MenuAvatar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handleNavigate = () => {
+    handleCloseUserMenu();
+    navigate("/Profile");
+  };
+
+  const handleLogOut = () => {
+    handleCloseUserMenu();
+    signOut();
+  };
+
   return (
     <Box sx={{ flexGrow: 0 }}>
-      <Tooltip title="Open settings">
-        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar
-            sx={{ width: 40, height: 40 }}
-            alt="Remy Sharp"
-            src="/static/images/avatar/2.jpg"
-          />
-        </IconButton>
-      </Tooltip>
+      <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+        <Avatar
+          sx={{ width: 40, height: 40 }}
+          alt={`${user.username}`}
+          src={user.photoURL}
+        />
+      </IconButton>
       <Menu
         sx={{ mt: "45px" }}
         id="menu-appbar"
@@ -48,11 +59,12 @@ const MenuAvatar = () => {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        {settings.map((setting) => (
-          <MenuItem key={setting} onClick={handleCloseUserMenu}>
-            <Typography sx={{ textAlign: "center" }}>{setting}</Typography>
-          </MenuItem>
-        ))}
+        <MenuItem onClick={handleNavigate}>
+          <Typography sx={{ textAlign: "center" }}>Perfil</Typography>
+        </MenuItem>
+        <MenuItem onClick={handleLogOut}>
+          <Typography sx={{ textAlign: "center" }}>Cerrar sesion</Typography>
+        </MenuItem>
       </Menu>
     </Box>
   );

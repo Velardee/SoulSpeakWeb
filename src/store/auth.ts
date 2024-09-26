@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { AuthActions, authType, User } from '../types/auth'
 import { devtools, persist } from 'zustand/middleware'
-import { emailLogin, emailSignUp, googleSignIn, googleSignUp } from '../utils/firebase/firebaseAuth'
+import { emailLogin, emailSignUp, googleSignIn, googleSignUp, logOut } from '../utils/firebase/firebaseAuth'
 
 export const initialUser: User = {
     uuid: undefined,
@@ -27,6 +27,9 @@ export const useAuthStore = create<authType & AuthActions>()(
                 },
                 setUser(user) {
                     set({ user }, false, 'Auth/setUser')
+                },
+                setPartialUser(user) {
+                    set({ user: { ...get().user, ...user } }, false, 'Auth/partialUser')
                 },
                 setToken: (token: string) => {
                     set({ token }, false, 'Auth/setToken')
@@ -63,14 +66,24 @@ export const useAuthStore = create<authType & AuthActions>()(
                     }
                 },
                 googleLogin: async () => {
-                    const { setUser, setToken } = get()
+                    const { setUser, setToken, setPartialUser } = get()
                     const userLogin = await googleSignIn()
 
                     if (userLogin) {
-                        const { user, token } = userLogin
+                        const { user, token, photo } = userLogin
                         setUser(user)
+                        setPartialUser({
+                            photoURL: photo
+                        })
                         setToken(token)
                     }
+                },
+                signOut: async () => {
+                    const { reset } = get()
+
+                    await logOut()
+
+                    reset()
                 },
             }),
             { name: "authStore" }

@@ -18,11 +18,13 @@ export type authType = {
 export type AuthActions = {
     reset: () => void
     setUser: (user: User) => void
+    setPartialUser: (user: Partial<User>) => void
     setToken: (token: string) => void
     signUp: (user: Register) => Promise<void>
     googleRegister: () => Promise<void>
     login: (user: Login) => Promise<void>
     googleLogin: () => Promise<void>
+    signOut: () => Promise<void>
 }
 
 export type User = {
@@ -37,6 +39,7 @@ export type User = {
 export type UserLogged = {
     user: User,
     token: string
+    photo?: string
 }
 
 export type FirebaseAuthErrorCode =
