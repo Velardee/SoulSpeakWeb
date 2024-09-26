@@ -13,7 +13,7 @@ export const initialUser: User = {
 
 const initialState: authType = {
     user: initialUser,
-    token: undefined
+    token: undefined,
 }
 
 export const useAuthStore = create<authType & AuthActions>()(

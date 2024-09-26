@@ -12,7 +12,7 @@ export interface Register {
 
 export type authType = {
     user: User,
-    token?: string
+    token: string | undefined
 }
 
 export type AuthActions = {
