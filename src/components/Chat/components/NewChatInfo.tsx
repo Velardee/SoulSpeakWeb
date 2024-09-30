@@ -8,32 +8,52 @@ import Positive from "../../../assets/Icons/Positive";
 import Negative from "../../../assets/Icons/Negative";
 import Neutral from "../../../assets/Icons/Neutral";
 import Other from "../../../assets/Icons/Other";
+import { useState } from "react";
+import ModalEmotions from "../../../customComponents/ModalEmotions";
 
 const NewChatInfo = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<string>("");
+
   const { user } = useAuthStore();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
+  const text = "¿Comó te sientes el dia de hoy?".split(" ");
+
   const cardActions = [
     {
       title: "Positivo",
       icon: <Positive width={isMobile ? 45 : 64} height={isMobile ? 45 : 64} />,
+      type: "POSITIVE",
     },
     {
       title: "Negativo",
       icon: <Negative width={isMobile ? 45 : 64} height={isMobile ? 45 : 64} />,
+      type: "NEGATIVE",
     },
     {
       title: "Neutral",
       icon: <Neutral width={isMobile ? 45 : 64} height={isMobile ? 45 : 64} />,
+      type: "NEUTRAL",
     },
     {
       title: "Otro",
       icon: <Other width={isMobile ? 45 : 64} height={isMobile ? 45 : 64} />,
+      type: "OTHER",
     },
   ];
-  const text = "¿Comó te sientes el dia de hoy?".split(" ");
+
+  const handleSetModalType = (type: string) => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    // setModalType("");
+    setIsModalOpen(false);
+  };
 
   return (
     <Grid container justifyContent={"center"} spacing={2} paddingY={2}>
@@ -78,11 +98,20 @@ const NewChatInfo = () => {
           key={index}
           display={"flex"}
           justifyContent={"center"}
-          size={{ xs: 12, sm: 10, md: 6, lg: 3, xl: 3 }}
+          size={{ xs: 12, sm: 12, md: 6, lg: 3, xl: 3 }}
         >
-          <EmotionCard title={action.title} icon={action.icon} />
+          <EmotionCard
+            title={action.title}
+            icon={action.icon}
+            onClick={() => handleSetModalType(action.type)}
+          />
         </Grid>
       ))}
+      <ModalEmotions
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        type={modalType}
+      />
     </Grid>
   );
 };

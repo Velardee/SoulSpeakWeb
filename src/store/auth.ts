@@ -1,7 +1,8 @@
 import { create } from 'zustand'
-import { AuthActions, authType, User } from '../types/auth'
+import { authType, StoreActions, User } from '../types/auth'
 import { devtools, persist } from 'zustand/middleware'
 import { emailLogin, emailSignUp, googleSignIn, googleSignUp, logOut } from '../utils/firebase/firebaseAuth'
+import { getChats } from '../utils/firebase/firebaseChat'
 
 export const initialUser: User = {
     uuid: undefined,
@@ -13,10 +14,12 @@ export const initialUser: User = {
 
 const initialState: authType = {
     user: initialUser,
+    chats: [],
+    todayChat: undefined,
     token: undefined,
 }
 
-export const useAuthStore = create<authType & AuthActions>()(
+export const useAuthStore = create<authType & StoreActions>()(
     devtools(
         persist(
             (set, get) => ({
@@ -84,6 +87,27 @@ export const useAuthStore = create<authType & AuthActions>()(
                     await logOut()
 
                     reset()
+                },
+                setUserChats(chats) {
+                    set({
+                        chats: chats
+                    }, false, 'chats/setChats')
+                },
+                getUserChats: async () => {
+                    const { user, setUserChats, chats } = get()
+
+                    if (!user) return
+
+                    const newChats = await getChats(user.uuid ?? "")
+
+                    if (newChats && JSON.stringify(newChats) !== JSON.stringify(chats)) {
+                        setUserChats(newChats);
+                    }
+                },
+                setTodayChat: (chat) => {
+                    set({
+                        todayChat: chat
+                    }, false, 'chats/SetTodayChat')
                 },
             }),
             { name: "authStore" }

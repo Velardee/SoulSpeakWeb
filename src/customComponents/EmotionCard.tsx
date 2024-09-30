@@ -5,13 +5,24 @@ import { motion } from "framer-motion";
 interface EmotionCardProps {
   title: string;
   icon: ReactNode;
+  onClick?: () => void;
 }
 
-const EmotionCard: FunctionComponent<EmotionCardProps> = ({ title, icon }) => {
+const EmotionCard: FunctionComponent<EmotionCardProps> = ({
+  title,
+  icon,
+  onClick,
+}) => {
   const theme = useTheme();
 
   return (
-    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} >
+    <motion.div
+      onClick={() => {
+        if (onClick) onClick();
+      }}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+    >
       <Card
         sx={{
           [theme.breakpoints.down("md")]: {
@@ -35,7 +46,16 @@ const EmotionCard: FunctionComponent<EmotionCardProps> = ({ title, icon }) => {
             }}
           >
             <Typography variant="h6">{title}</Typography>
-            <div>{icon}</div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                duration: 0.25,
+                delay: 0.1
+              }}
+            >
+              {icon}
+            </motion.div>
           </Box>
         </CardContent>
       </Card>

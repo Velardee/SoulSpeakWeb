@@ -1,3 +1,5 @@
+import { Chat, ChatActions } from "./chat"
+
 export interface Login {
     email: string,
     password: string,
@@ -13,7 +15,11 @@ export interface Register {
 export type authType = {
     user: User,
     token: string | undefined
+    chats: Chat[] | []
+    todayChat: Chat | undefined
 }
+
+export type StoreActions = AuthActions & ChatActions
 
 export type AuthActions = {
     reset: () => void
