@@ -3,6 +3,8 @@ import { authType, StoreActions, User } from '../types/auth'
 import { devtools, persist } from 'zustand/middleware'
 import { emailLogin, emailSignUp, googleSignIn, googleSignUp, logOut } from '../utils/firebase/firebaseAuth'
 import { getChats } from '../utils/firebase/firebaseChat'
+import { format } from '@formkit/tempo'
+import { Chat } from '../types/chat'
 
 export const initialUser: User = {
     uuid: undefined,
@@ -12,10 +14,19 @@ export const initialUser: User = {
     provider: undefined,
 }
 
+export const initialTodayChat: Chat = {
+    uuid: undefined,
+    emotion: undefined,
+    messages: [],
+    userUuid: "",
+    firstMessage: undefined,
+    createdAt: undefined
+}
+
 const initialState: authType = {
     user: initialUser,
     chats: [],
-    todayChat: undefined,
+    todayChat: initialTodayChat,
     token: undefined,
 }
 
@@ -32,10 +43,20 @@ export const useAuthStore = create<authType & StoreActions>()(
                     set({ user }, false, 'Auth/setUser')
                 },
                 setPartialUser(user) {
-                    set({ user: { ...get().user, ...user } }, false, 'Auth/partialUser')
+                    set(() => {
+                        return {
+                            user: {
+                                ...get().user,
+                                ...user
+                            }
+                        }
+                    }, false, 'Auth/partialUser')
                 },
                 setToken: (token: string) => {
-                    set({ token }, false, 'Auth/setToken')
+                    set((state) => ({
+                        ...state,
+                        token
+                    }), false, "Auth/setToken")
                 },
                 signUp: async (user) => {
                     const { setUser } = get()
@@ -89,25 +110,67 @@ export const useAuthStore = create<authType & StoreActions>()(
                     reset()
                 },
                 setUserChats(chats) {
-                    set({
-                        chats: chats
-                    }, false, 'chats/setChats')
+                    set((state) => ({
+                        ...state,
+                        chats: [
+                            ...chats
+                        ]
+                    }), false, 'chats/setChats')
                 },
                 getUserChats: async () => {
-                    const { user, setUserChats, chats } = get()
+                    const { user, chats, findTodayChat } = get()
 
                     if (!user) return
 
                     const newChats = await getChats(user.uuid ?? "")
 
                     if (newChats && JSON.stringify(newChats) !== JSON.stringify(chats)) {
-                        setUserChats(newChats);
+                        set((state) => ({
+                            ...state,
+                            chats: [...newChats]
+                        }))
+                        findTodayChat(newChats ?? [])
+                    }
+
+                },
+                findTodayChat: (chats) => {
+                    const { setTodayChat } = get()
+                    //get Today 
+                    const date = new Date()
+                    const today = format(date, "YYYY-MM-DD", "en")
+
+                    const todayChat = chats.find((chat) => {
+                        const { createdAt } = chat;
+                        if (createdAt !== undefined) {
+                            const firebaseTime = createdAt;
+                            const formatedChatDate = format(firebaseTime.toDate(), "YYYY-MM-DD", "en");
+                            return today === formatedChatDate;
+                        }
+
+                    });
+
+                    if (todayChat) {
+                        setTodayChat(todayChat)
                     }
                 },
                 setTodayChat: (chat) => {
-                    set({
-                        todayChat: chat
-                    }, false, 'chats/SetTodayChat')
+                    set(
+                        (state) => {
+                            return {
+                                ...state,
+                                todayChat: chat
+                            }
+                        }, false, 'chats/SetTodayChat'
+                    )
+                },
+                setPartialTodayChat(chat) {
+                    set(
+                        (state) => ({
+                            ...state,
+                            todayChat: { ...get().todayChat, ...chat }
+                        }),
+                        false, 'chats/setPartialTodayChat'
+                    )
                 },
             }),
             { name: "authStore" }

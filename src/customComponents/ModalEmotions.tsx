@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode } from "react";
+import { FunctionComponent, ReactNode, useEffect, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -27,6 +27,8 @@ import NotSure from "../assets/Icons/mixed/NotSure";
 import Neutral from "../assets/Icons/Neutral";
 import Pensive from "../assets/Icons/neutral/Pensive";
 import Calmed from "../assets/Icons/neutral/Calmed";
+import { useAuthStore } from "../store/auth";
+import { useShallow } from "zustand/shallow";
 
 interface ModalEmotionsProps {
   open: boolean;
@@ -34,13 +36,46 @@ interface ModalEmotionsProps {
   onClose: () => void;
 }
 
+type Emotion = {
+  title: string;
+  icon: ReactNode;
+};
+
 const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
   open,
   type,
   onClose,
 }) => {
+  const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>();
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const setPartialTodayChat = useAuthStore(
+    useShallow(
+      (state) => state.setPartialTodayChat
+    )
+  );
+
+  const handleSelectEmotion = (emotion: Emotion) => {
+    setSelectedEmotion(emotion);
+    console.log(emotion);
+  };
+
+  const handleConfirmSelection = () => {
+    if (selectedEmotion) {
+      setPartialTodayChat({
+       emotion: selectedEmotion.title
+      });
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (!open) {
+      setSelectedEmotion(null);
+    }
+  }, [open]);
 
   const positiveEmotions = [
     {
@@ -145,10 +180,12 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
           <Grid container spacing={3} paddingY={2}>
             {positiveEmotions.map((action, index) => (
               <Grid
+                component={"div"}
                 key={index}
                 display={"flex"}
                 justifyContent={"center"}
                 size={{ xs: 12, sm: 10, md: 6, lg: 3, xl: 3 }}
+                onClick={() => handleSelectEmotion(action)}
               >
                 <EmotionCard title={action.title} icon={action.icon} />
               </Grid>
@@ -160,10 +197,12 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
           <Grid container spacing={3} paddingY={2}>
             {negativeEmotions.map((action, index) => (
               <Grid
+                component={"div"}
                 key={index}
                 display={"flex"}
                 justifyContent={"center"}
                 size={{ xs: 12, sm: 10, md: 6, lg: 3, xl: 3 }}
+                onClick={() => handleSelectEmotion(action)}
               >
                 <EmotionCard title={action.title} icon={action.icon} />
               </Grid>
@@ -175,10 +214,12 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
           <Grid container spacing={3} paddingY={2}>
             {neutralEmotions.map((action, index) => (
               <Grid
+                component={"div"}
                 key={index}
                 display={"flex"}
                 justifyContent={"center"}
                 size={{ xs: 12, sm: 10, md: 6, lg: 3, xl: 3 }}
+                onClick={() => handleSelectEmotion(action)}
               >
                 <EmotionCard title={action.title} icon={action.icon} />
               </Grid>
@@ -190,10 +231,12 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
           <Grid container spacing={3} paddingY={2}>
             {mixedEmotions.map((action, index) => (
               <Grid
+                component={"div"}
                 key={index}
                 display={"flex"}
                 justifyContent={"center"}
                 size={{ xs: 12, sm: 10, md: 6, lg: 3, xl: 3 }}
+                onClick={() => handleSelectEmotion(action)}
               >
                 <EmotionCard title={action.title} icon={action.icon} />
               </Grid>
@@ -224,7 +267,16 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
       </DialogTitle>
       <DialogContent>{renderEmotions()}</DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
+        <Button
+          disabled={selectedEmotion === null}
+          color="info"
+          onClick={handleConfirmSelection}
+        >
+          Aceptar
+        </Button>
+        <Button color="error" onClick={onClose}>
+          Cancelar
+        </Button>
       </DialogActions>
     </Dialog>
   );

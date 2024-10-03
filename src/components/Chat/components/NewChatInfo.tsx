@@ -10,12 +10,17 @@ import Neutral from "../../../assets/Icons/Neutral";
 import Other from "../../../assets/Icons/Other";
 import { useState } from "react";
 import ModalEmotions from "../../../customComponents/ModalEmotions";
+import { useShallow } from "zustand/shallow";
 
 const NewChatInfo = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<string>("");
 
-  const { user } = useAuthStore();
+  const { user } = useAuthStore(
+    useShallow((state) => ({
+      user: state.user,
+    }))
+  );
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));

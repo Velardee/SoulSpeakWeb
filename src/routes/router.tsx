@@ -6,7 +6,7 @@ import Home from "../pages/home";
 import PersistentDrawer from "../components/Drawer/Drawer";
 
 function Router() {
-  const { token } = useAuthStore();
+  const token  = useAuthStore((state) => state.token);
 
   const PrivateRoute = ({ element }: { element: JSX.Element }) => {
     return token ? (
