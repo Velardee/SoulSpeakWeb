@@ -6,12 +6,17 @@ interface EmotionCardProps {
   title: string;
   icon: ReactNode;
   onClick?: () => void;
+  selectedEmotion?: {
+    title: string,
+    icon: ReactNode,
+  } | null
 }
 
 const EmotionCard: FunctionComponent<EmotionCardProps> = ({
   title,
   icon,
   onClick,
+  selectedEmotion,
 }) => {
   const theme = useTheme();
 
@@ -28,6 +33,7 @@ const EmotionCard: FunctionComponent<EmotionCardProps> = ({
           [theme.breakpoints.down("md")]: {
             minWidth: "180px",
           },
+          backgroundColor: `${selectedEmotion && selectedEmotion.title == title && "#313538"}`,
           minWidth: "150px",
           maxWidth: "170px",
           borderRadius: 5,

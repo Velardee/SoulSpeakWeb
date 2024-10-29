@@ -10,17 +10,12 @@ import Neutral from "../../../assets/Icons/Neutral";
 import Other from "../../../assets/Icons/Other";
 import { useState } from "react";
 import ModalEmotions from "../../../customComponents/ModalEmotions";
-import { useShallow } from "zustand/shallow";
 
 const NewChatInfo = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<string>("");
 
-  const { user } = useAuthStore(
-    useShallow((state) => ({
-      user: state.user,
-    }))
-  );
+  const user = useAuthStore((state) => state.user);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -61,11 +56,11 @@ const NewChatInfo = () => {
   };
 
   return (
-    <Grid container justifyContent={"center"} spacing={2} paddingY={2}>
+    <Grid container justifyContent={"center"} spacing={2}>
       <Grid size={{ xs: 12 }}>
         <Box paddingBottom={1}>
           <Typography
-            variant="h3"
+            variant="h4"
             sx={{
               [theme.breakpoints.down("md")]: {
                 fontSize: "22px",
@@ -75,7 +70,7 @@ const NewChatInfo = () => {
             Hola {user.username}
           </Typography>
           <Typography
-            variant="h3"
+            variant="h4"
             sx={{
               [theme.breakpoints.down("md")]: {
                 fontSize: "22px",
@@ -103,7 +98,7 @@ const NewChatInfo = () => {
           key={index}
           display={"flex"}
           justifyContent={"center"}
-          size={{ xs: 12, sm: 12, md: 6, lg: 3, xl: 3 }}
+          size={{ xs: 12, sm: 12, md: 6, lg: 6, xl: 3 }}
         >
           <EmotionCard
             title={action.title}

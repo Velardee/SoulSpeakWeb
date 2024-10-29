@@ -4,11 +4,16 @@ import NewChatInfo from "./components/NewChatInfo";
 
 const Chat = () => {
   return (
-    <Box display={"flex"} flexDirection={"column"} height="80vh">
-      <Box flexGrow={1}>
+    <Box
+      display={"flex"}
+      flexDirection={"column"}
+      height="calc(100vh - 64px)"
+      overflow={"hidden"}
+    >
+      <Box flexGrow={1} overflow="auto">
         <NewChatInfo />
       </Box>
-      <Box>
+      <Box position="sticky" bottom={0}>
         <InputMessage />
       </Box>
     </Box>

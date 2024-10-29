@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { authType, StoreActions, User } from '../types/auth'
 import { devtools, persist } from 'zustand/middleware'
 import { emailLogin, emailSignUp, googleSignIn, googleSignUp, logOut } from '../utils/firebase/firebaseAuth'
-import { getChats } from '../utils/firebase/firebaseChat'
+import { createChat, getChats } from '../utils/firebase/firebaseChat'
 import { format } from '@formkit/tempo'
 import { Chat } from '../types/chat'
 
@@ -16,7 +16,7 @@ export const initialUser: User = {
 
 export const initialTodayChat: Chat = {
     uuid: undefined,
-    emotion: undefined,
+    emotion: "",
     messages: [],
     userUuid: "",
     firstMessage: undefined,
@@ -171,6 +171,18 @@ export const useAuthStore = create<authType & StoreActions>()(
                         }),
                         false, 'chats/setPartialTodayChat'
                     )
+                },
+                createTodayChat: async (emotion) => {
+                    const { user, setTodayChat } = get()
+
+                    const createdChat = await createChat(user.uuid ?? "", emotion)
+
+                    if (createdChat) {
+                        setTodayChat({
+                            ...createdChat
+                        })
+                    }
+
                 },
             }),
             { name: "authStore" }

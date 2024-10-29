@@ -15,6 +15,7 @@ export type ChatActions = {
     findTodayChat: (chats: Chat[]) => void
     setTodayChat: (chat: Chat) => void
     setPartialTodayChat: (chat: Partial<Chat>) => void
+    createTodayChat: (emotion: string) => Promise<void>
 }
 
 export type Mesagge = {

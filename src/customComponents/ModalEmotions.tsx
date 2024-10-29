@@ -28,8 +28,6 @@ import Neutral from "../assets/Icons/Neutral";
 import Pensive from "../assets/Icons/neutral/Pensive";
 import Calmed from "../assets/Icons/neutral/Calmed";
 import { useAuthStore } from "../store/auth";
-import { useShallow } from "zustand/shallow";
-
 interface ModalEmotionsProps {
   open: boolean;
   type: string;
@@ -51,22 +49,17 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const setPartialTodayChat = useAuthStore(
-    useShallow(
-      (state) => state.setPartialTodayChat
-    )
-  );
+  const createTodayChat = useAuthStore((state) => state.createTodayChat);
 
   const handleSelectEmotion = (emotion: Emotion) => {
     setSelectedEmotion(emotion);
-    console.log(emotion);
   };
 
   const handleConfirmSelection = () => {
     if (selectedEmotion) {
-      setPartialTodayChat({
-       emotion: selectedEmotion.title
-      });
+
+      createTodayChat(selectedEmotion.title);
+
       onClose();
     }
   };
@@ -187,7 +180,11 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
                 size={{ xs: 12, sm: 10, md: 6, lg: 3, xl: 3 }}
                 onClick={() => handleSelectEmotion(action)}
               >
-                <EmotionCard title={action.title} icon={action.icon} />
+                <EmotionCard
+                  title={action.title}
+                  icon={action.icon}
+                  selectedEmotion={selectedEmotion}
+                />
               </Grid>
             ))}
           </Grid>
@@ -204,7 +201,11 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
                 size={{ xs: 12, sm: 10, md: 6, lg: 3, xl: 3 }}
                 onClick={() => handleSelectEmotion(action)}
               >
-                <EmotionCard title={action.title} icon={action.icon} />
+                <EmotionCard
+                  title={action.title}
+                  icon={action.icon}
+                  selectedEmotion={selectedEmotion}
+                />
               </Grid>
             ))}
           </Grid>
@@ -221,7 +222,11 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
                 size={{ xs: 12, sm: 10, md: 6, lg: 3, xl: 3 }}
                 onClick={() => handleSelectEmotion(action)}
               >
-                <EmotionCard title={action.title} icon={action.icon} />
+                <EmotionCard
+                  title={action.title}
+                  icon={action.icon}
+                  selectedEmotion={selectedEmotion}
+                />
               </Grid>
             ))}
           </Grid>
@@ -238,7 +243,11 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
                 size={{ xs: 12, sm: 10, md: 6, lg: 3, xl: 3 }}
                 onClick={() => handleSelectEmotion(action)}
               >
-                <EmotionCard title={action.title} icon={action.icon} />
+                <EmotionCard
+                  title={action.title}
+                  icon={action.icon}
+                  selectedEmotion={selectedEmotion}
+                />
               </Grid>
             ))}
           </Grid>
