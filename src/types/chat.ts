@@ -4,7 +4,7 @@ export interface Chat {
     uuid: string | undefined
     emotion: string | undefined
     userUuid: string | undefined
-    messages: Mesagge[] | []
+    messages: Message[] | []
     firstMessage: string | undefined
     createdAt: Timestamp | undefined
 }
@@ -15,11 +15,21 @@ export type ChatActions = {
     findTodayChat: (chats: Chat[]) => void
     setTodayChat: (chat: Chat) => void
     setPartialTodayChat: (chat: Partial<Chat>) => void
-    createTodayChat: (emotion: string) => Promise<void>
+    createTodayChat: (message: string) => Promise<void>
+    setSelectedChatUuid: (uuid: string) => void
+    sendMessage: (message: string) => Promise<void>
+    addMessageTochat: (message: Message) => void
+    getSelectedChat: () => Chat | undefined
 }
 
-export type Mesagge = {
-    uuid: string
-    text: string
+export type Message = {
+    uuid?: string
+    message: string
     createdAt: unknown
+    sendedBy: UserType
+}
+
+export enum UserType {
+    user = "USER",
+    ia = "IA"
 }

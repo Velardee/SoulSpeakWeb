@@ -17,6 +17,7 @@ export type authType = {
     token: string | undefined
     chats: Chat[] | []
     todayChat: Chat
+    selectedChatUuid: string
 }
 
 export type StoreActions = AuthActions & ChatActions

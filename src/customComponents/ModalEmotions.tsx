@@ -49,7 +49,9 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const createTodayChat = useAuthStore((state) => state.createTodayChat);
+  const setPartialTodayChat = useAuthStore(
+    (state) => state.setPartialTodayChat
+  );
 
   const handleSelectEmotion = (emotion: Emotion) => {
     setSelectedEmotion(emotion);
@@ -57,9 +59,10 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
 
   const handleConfirmSelection = () => {
     if (selectedEmotion) {
-
-      createTodayChat(selectedEmotion.title);
-
+      console.log("emotion", selectedEmotion)
+      setPartialTodayChat({
+        emotion: selectedEmotion.title,
+      });
       onClose();
     }
   };

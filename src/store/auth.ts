@@ -2,9 +2,9 @@ import { create } from 'zustand'
 import { authType, StoreActions, User } from '../types/auth'
 import { devtools, persist } from 'zustand/middleware'
 import { emailLogin, emailSignUp, googleSignIn, googleSignUp, logOut } from '../utils/firebase/firebaseAuth'
-import { createChat, getChats } from '../utils/firebase/firebaseChat'
+import { createChat, getChats, sendMessageFirebase } from '../utils/firebase/firebaseChat'
 import { format } from '@formkit/tempo'
-import { Chat } from '../types/chat'
+import { Chat, UserType } from '../types/chat'
 
 export const initialUser: User = {
     uuid: undefined,
@@ -27,6 +27,7 @@ const initialState: authType = {
     user: initialUser,
     chats: [],
     todayChat: initialTodayChat,
+    selectedChatUuid: "",
     token: undefined,
 }
 
@@ -134,7 +135,7 @@ export const useAuthStore = create<authType & StoreActions>()(
 
                 },
                 findTodayChat: (chats) => {
-                    const { setTodayChat } = get()
+                    const { setTodayChat, setSelectedChatUuid } = get()
                     //get Today 
                     const date = new Date()
                     const today = format(date, "YYYY-MM-DD", "en")
@@ -151,6 +152,7 @@ export const useAuthStore = create<authType & StoreActions>()(
 
                     if (todayChat) {
                         setTodayChat(todayChat)
+                        setSelectedChatUuid(todayChat.uuid ?? "")
                     }
                 },
                 setTodayChat: (chat) => {
@@ -172,17 +174,65 @@ export const useAuthStore = create<authType & StoreActions>()(
                         false, 'chats/setPartialTodayChat'
                     )
                 },
-                createTodayChat: async (emotion) => {
-                    const { user, setTodayChat } = get()
+                createTodayChat: async (message) => {
+                    const { user, setTodayChat, todayChat, setSelectedChatUuid } = get()
 
-                    const createdChat = await createChat(user.uuid ?? "", emotion)
+                    if (!user.uuid || !todayChat.emotion) {
+                        return
+                    }
+
+                    const createdChat = await createChat(user.uuid, todayChat.emotion, message)
 
                     if (createdChat) {
                         setTodayChat({
                             ...createdChat
                         })
+                        setSelectedChatUuid(createdChat.uuid ?? "")
                     }
 
+                },
+                setSelectedChatUuid: (uuid: string) => {
+                    set((state) => ({
+                        ...state,
+                        selectedChatUuid: uuid
+                    }), false, "Auth/setSelectedChat")
+                },
+                sendMessage: async (message) => {
+                    const { selectedChatUuid, addMessageTochat, createTodayChat } = get()
+
+                    if (!selectedChatUuid) {
+                        createTodayChat(message)
+                        return
+                    }
+
+                    try {
+                        const newMessage = await sendMessageFirebase(message, selectedChatUuid, UserType.user)
+                        addMessageTochat(newMessage)
+                    } catch (error) {
+                        console.log(error)
+                    }
+                },
+                addMessageTochat: (message) => {
+                    const { todayChat, selectedChatUuid, setPartialTodayChat } = get()
+
+                    //* user only can send messages if selected chat is today chat
+                    if (selectedChatUuid === todayChat.uuid) {
+                        setPartialTodayChat({
+                            messages: [
+                                ...(todayChat.messages || []),
+                                message
+                            ]
+                        })
+                    }
+
+                },
+                getSelectedChat: () => {
+                    const { selectedChatUuid, chats } = get()
+
+                    //find selectedChat in chats
+                    const findedChat = chats.find((chat) => chat.uuid === selectedChatUuid)
+
+                    return findedChat
                 },
             }),
             { name: "authStore" }

@@ -2,10 +2,12 @@
 import Chat from "../../components/Chat";
 import { useEffect } from "react";
 import { useAuthStore } from "../../store/auth";
-import { Box } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 
 const Home = () => {
   const getUserChats = useAuthStore((state) => state.getUserChats);
+
+//TODO: Cuando la pagina se refresca el selectedChat se pierde
 
   useEffect(() => {
     getUserChats();
@@ -13,11 +15,11 @@ const Home = () => {
   }, []);
 
   return (
-    <Box width={"100%"} display={"flex"} justifyContent={"center"}>
-      <Box maxWidth={800}>
+    <Grid container spacing={0} justifyContent={"center"}>
+      <Grid size={{ xs: 12, sm: 12, md: 12, lg: 8, xl: 6 }}>
         <Chat />
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 };
 

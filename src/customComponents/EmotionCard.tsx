@@ -1,6 +1,7 @@
 import { Box, Card, CardContent, Typography, useTheme } from "@mui/material";
 import { FunctionComponent, ReactNode } from "react";
 import { motion } from "framer-motion";
+// import { useAuthStore } from "../store/auth";
 
 interface EmotionCardProps {
   title: string;
