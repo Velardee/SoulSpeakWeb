@@ -11,20 +11,20 @@ const Conversation: FunctionComponent<ConversationProps> = ({ messages }) => {
   useEffect(() => {}, [messages]);
 
   return (
-    <Box width="100%">
+    <Box width="100%" paddingTop={1}>
       {messages.map((message, index) => {
         if (message.sendedBy === UserType.user) {
           return (
-            <Box key={index}>
+            <section key={index}>
               <CardMessage message={message.message} from={UserType.user} />
-            </Box>
+            </section>
           );
         }
         if (message.sendedBy === UserType.ia) {
           return (
-            <Box key={index}>
+            <section key={index}>
               <CardMessage message={message.message} from={UserType.ia} />
-            </Box>
+            </section>
           );
         }
       })}

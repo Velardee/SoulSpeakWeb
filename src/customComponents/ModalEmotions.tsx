@@ -50,7 +50,7 @@ const ModalEmotions: FunctionComponent<ModalEmotionsProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const setPartialTodayChat = useAuthStore(
-    (state) => state.setPartialTodayChat
+    (state) => state.setPartialSelectedChat
   );
 
   const handleSelectEmotion = (emotion: Emotion) => {

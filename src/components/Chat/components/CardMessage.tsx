@@ -16,6 +16,7 @@ const CardMessage: FunctionComponent<CardMessageProps> = ({ message, from }) => 
     <Box
       display={"flex"}
       flexDirection={from == UserType.user ? "row" : "row-reverse"}
+      justifyContent={from == UserType.user ? "flex-end" : "flex-start"}
       gap={3}
       sx={{ width: "100%" }}
     >

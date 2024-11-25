@@ -14,20 +14,20 @@ export const initialUser: User = {
     provider: undefined,
 }
 
-export const initialTodayChat: Chat = {
+export const initialSelectedChat: Chat = {
     uuid: undefined,
     emotion: "",
     messages: [],
     userUuid: "",
     firstMessage: undefined,
-    createdAt: undefined
+    createdAt: undefined,
+    isToday: false
 }
 
 const initialState: authType = {
     user: initialUser,
     chats: [],
-    todayChat: initialTodayChat,
-    selectedChatUuid: "",
+    selectedChat: initialSelectedChat,
     token: undefined,
 }
 
@@ -135,7 +135,7 @@ export const useAuthStore = create<authType & StoreActions>()(
 
                 },
                 findTodayChat: (chats) => {
-                    const { setTodayChat, setSelectedChatUuid } = get()
+                    const { setTodayChat } = get()
                     //get Today 
                     const date = new Date()
                     const today = format(date, "YYYY-MM-DD", "en")
@@ -151,8 +151,8 @@ export const useAuthStore = create<authType & StoreActions>()(
                     });
 
                     if (todayChat) {
+                        todayChat.isToday = true;
                         setTodayChat(todayChat)
-                        setSelectedChatUuid(todayChat.uuid ?? "")
                     }
                 },
                 setTodayChat: (chat) => {
@@ -160,34 +160,34 @@ export const useAuthStore = create<authType & StoreActions>()(
                         (state) => {
                             return {
                                 ...state,
-                                todayChat: chat
+                                selectedChat: chat
                             }
                         }, false, 'chats/SetTodayChat'
                     )
                 },
-                setPartialTodayChat(chat) {
+                setPartialSelectedChat(chat) {
                     set(
                         (state) => ({
                             ...state,
-                            todayChat: { ...get().todayChat, ...chat }
+                            selectedChat: { ...get().selectedChat, ...chat }
                         }),
                         false, 'chats/setPartialTodayChat'
                     )
                 },
                 createTodayChat: async (message) => {
-                    const { user, setTodayChat, todayChat, setSelectedChatUuid } = get()
+                    const { user, setTodayChat, selectedChat } = get()
 
-                    if (!user.uuid || !todayChat.emotion) {
+                    if (!user.uuid || !selectedChat.emotion) {
                         return
                     }
 
-                    const createdChat = await createChat(user.uuid, todayChat.emotion, message)
+                    const createdChat = await createChat(user.uuid, selectedChat.emotion, message)
 
                     if (createdChat) {
+                        createdChat.isToday = true
                         setTodayChat({
                             ...createdChat
                         })
-                        setSelectedChatUuid(createdChat.uuid ?? "")
                     }
 
                 },
@@ -198,28 +198,28 @@ export const useAuthStore = create<authType & StoreActions>()(
                     }), false, "Auth/setSelectedChat")
                 },
                 sendMessage: async (message) => {
-                    const { selectedChatUuid, addMessageTochat, createTodayChat } = get()
+                    const { addMessageTochat, createTodayChat, selectedChat } = get()
 
-                    if (!selectedChatUuid) {
+                    if (!selectedChat.uuid || selectedChat.uuid !== "") {
                         createTodayChat(message)
                         return
                     }
 
                     try {
-                        const newMessage = await sendMessageFirebase(message, selectedChatUuid, UserType.user)
+                        const newMessage = await sendMessageFirebase(message, selectedChat.uuid, UserType.user)
                         addMessageTochat(newMessage)
                     } catch (error) {
                         console.log(error)
                     }
                 },
                 addMessageTochat: (message) => {
-                    const { todayChat, selectedChatUuid, setPartialTodayChat } = get()
+                    const { selectedChat, setPartialSelectedChat } = get()
 
                     //* user only can send messages if selected chat is today chat
-                    if (selectedChatUuid === todayChat.uuid) {
-                        setPartialTodayChat({
+                    if (selectedChat.uuid) {
+                        setPartialSelectedChat({
                             messages: [
-                                ...(todayChat.messages || []),
+                                ...(selectedChat.messages || []),
                                 message
                             ]
                         })
@@ -227,10 +227,10 @@ export const useAuthStore = create<authType & StoreActions>()(
 
                 },
                 getSelectedChat: () => {
-                    const { selectedChatUuid, chats } = get()
+                    const { selectedChat, chats } = get()
 
                     //find selectedChat in chats
-                    const findedChat = chats.find((chat) => chat.uuid === selectedChatUuid)
+                    const findedChat = chats.find((chat) => chat.uuid === selectedChat.uuid)
 
                     return findedChat
                 },

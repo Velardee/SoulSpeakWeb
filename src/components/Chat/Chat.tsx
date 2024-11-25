@@ -3,24 +3,27 @@ import InputMessage from "./components/InputMessage";
 import NewChatInfo from "./components/NewChatInfo";
 import { useAuthStore } from "../../store/auth";
 import Conversation from "./components/Conversation";
+import { useEffect } from "react";
 
 const Chat = () => {
-  const todayChat = useAuthStore((state) => state.todayChat);
-  const selectedChatUuid = useAuthStore((state) => state.selectedChatUuid);
+  const selectedChat = useAuthStore((state) => state.selectedChat);
 
+  useEffect(() => {
+    console.log("selected", selectedChat);
+  }, [selectedChat]);
+
+  useEffect(() => {
+    renderChat()
+  }, []);
 
   //* primer idea para el chat
   function renderChat() {
-    if (
-      (todayChat.uuid === selectedChatUuid &&
-        todayChat.messages.length === 0) ||
-      selectedChatUuid == ""
-    ) {
+    if (selectedChat.messages.length === 0) {
       return <NewChatInfo />;
     }
 
-    if (todayChat.uuid === selectedChatUuid && todayChat.messages.length > 0) {
-      return <div>{<Conversation messages={todayChat.messages} />}</div>;
+    if (selectedChat.messages.length > 0) {
+      return <div>{<Conversation messages={selectedChat.messages} />}</div>;
     }
   }
 
@@ -32,7 +35,7 @@ const Chat = () => {
       overflow={"hidden"}
       paddingBottom={"30px"}
       sx={{
-        width: "100%"
+        width: "100%",
       }}
     >
       <Box flexGrow={1} overflow="auto">
