@@ -16,7 +16,7 @@ const CardMessage: FunctionComponent<CardMessageProps> = ({ message, from }) => 
     <Box
       display={"flex"}
       flexDirection={from == UserType.user ? "row" : "row-reverse"}
-      justifyContent={from == UserType.user ? "flex-end" : "flex-start"}
+      justifyContent={from == UserType.user ? "flex-end" : "flex-end"}
       gap={3}
       sx={{ width: "100%" }}
     >
@@ -24,7 +24,8 @@ const CardMessage: FunctionComponent<CardMessageProps> = ({ message, from }) => 
         sx={{
           backgroundColor: "#1E1F21",
           borderRadius: "12px",
-          padding: "10px",
+          padding: "15px",
+          maxWidth: "70%",
         }}
       >
         <Typography variant="body1" sx={{ textWrap: "wrap", color: "white" }}>

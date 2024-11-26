@@ -10,14 +10,16 @@ import TextField from "@mui/material/TextField";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import { useAuthStore } from "../../../store/auth";
 import { enqueueSnackbar } from "notistack";
+import { UserType } from "../../../types/chat";
 
 const InputMessage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string>("");
 
-  const todayChat = useAuthStore((state) => state.todayChat);
+  const todayChat = useAuthStore((state) => state.selectedChat);
 
   const sendMessage = useAuthStore((state) => state.sendMessage);
+  const getAIResponse = useAuthStore((state) => state.getAIResponse)
 
   const isTodayChatEmpty = todayChat.emotion === "";
 
@@ -28,9 +30,11 @@ const InputMessage = () => {
 
   const handleSendMessage = () => {
     setIsLoading(true);
-    sendMessage(message)
+    sendMessage(message, UserType.user)
       .then(() => {
         setIsLoading(false);
+        //If response is ok generate ia response
+        getAIResponse(message)
         setMessage("");
       })
       .catch((error) => {

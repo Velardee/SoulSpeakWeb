@@ -5,6 +5,7 @@ import { emailLogin, emailSignUp, googleSignIn, googleSignUp, logOut } from '../
 import { createChat, getChats, sendMessageFirebase } from '../utils/firebase/firebaseChat'
 import { format } from '@formkit/tempo'
 import { Chat, UserType } from '../types/chat'
+import { generateAIMessage } from '../utils/openAIChat'
 
 export const initialUser: User = {
     uuid: undefined,
@@ -197,34 +198,38 @@ export const useAuthStore = create<authType & StoreActions>()(
                         selectedChatUuid: uuid
                     }), false, "Auth/setSelectedChat")
                 },
-                sendMessage: async (message) => {
+                sendMessage: async (message, user) => {
                     const { addMessageTochat, createTodayChat, selectedChat } = get()
 
-                    if (!selectedChat.uuid || selectedChat.uuid !== "") {
+                    if (!selectedChat.uuid || selectedChat.uuid === "") {
+                        console.log("Creating chat")
                         createTodayChat(message)
                         return
                     }
 
                     try {
-                        const newMessage = await sendMessageFirebase(message, selectedChat.uuid, UserType.user)
+                        const newMessage = await sendMessageFirebase(message, selectedChat.uuid, user)
                         addMessageTochat(newMessage)
+
                     } catch (error) {
                         console.log(error)
                     }
                 },
                 addMessageTochat: (message) => {
-                    const { selectedChat, setPartialSelectedChat } = get()
+                    const { selectedChat, setPartialSelectedChat } = get();
+
 
                     //* user only can send messages if selected chat is today chat
-                    if (selectedChat.uuid) {
-                        setPartialSelectedChat({
-                            messages: [
-                                ...(selectedChat.messages || []),
-                                message
-                            ]
-                        })
-                    }
+                    if (selectedChat?.uuid) {
+                        const updatedMessages = Array.isArray(selectedChat.messages)
+                            ? [...selectedChat.messages, message]
+                            : [message];
 
+                        setPartialSelectedChat({
+                            ...selectedChat,
+                            messages: updatedMessages,
+                        });
+                    }
                 },
                 getSelectedChat: () => {
                     const { selectedChat, chats } = get()
@@ -233,6 +238,24 @@ export const useAuthStore = create<authType & StoreActions>()(
                     const findedChat = chats.find((chat) => chat.uuid === selectedChat.uuid)
 
                     return findedChat
+                },
+                getAIResponse: async (message) => {
+                    const { selectedChat, sendMessage } = get()
+                    try {
+                        if (selectedChat.emotion) {
+                            const response = await generateAIMessage(message, selectedChat.emotion)
+                            if (response) {
+                                sendMessage(String(response), UserType.ia)
+                            }
+                        } else {
+                            const response = await generateAIMessage(message)
+                            if (response) {
+                                sendMessage(String(response), UserType.ia)
+                            }
+                        }
+                    } catch (error) {
+                        console.log(error)
+                    }
                 },
             }),
             { name: "authStore" }

@@ -7,7 +7,7 @@ export interface Chat {
     messages: Message[] | []
     firstMessage: string | undefined
     createdAt: Timestamp | undefined
-    isToday: boolean
+    isToday?: boolean
 }
 
 export type ChatActions = {
@@ -18,9 +18,10 @@ export type ChatActions = {
     setPartialSelectedChat: (chat: Partial<Chat>) => void
     createTodayChat: (message: string) => Promise<void>
     setSelectedChatUuid: (uuid: string) => void
-    sendMessage: (message: string) => Promise<void>
+    sendMessage: (message: string, user: UserType) => Promise<void>
     addMessageTochat: (message: Message) => void
     getSelectedChat: () => Chat | undefined
+    getAIResponse: (message: string) => void
 }
 
 export type Message = {

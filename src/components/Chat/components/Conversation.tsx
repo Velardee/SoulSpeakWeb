@@ -15,14 +15,14 @@ const Conversation: FunctionComponent<ConversationProps> = ({ messages }) => {
       {messages.map((message, index) => {
         if (message.sendedBy === UserType.user) {
           return (
-            <section key={index}>
+            <section style={{ marginBottom: "30px" }} key={index}>
               <CardMessage message={message.message} from={UserType.user} />
             </section>
           );
         }
         if (message.sendedBy === UserType.ia) {
           return (
-            <section key={index}>
+            <section style={{ marginBottom: "30px" }} key={index}>
               <CardMessage message={message.message} from={UserType.ia} />
             </section>
           );
