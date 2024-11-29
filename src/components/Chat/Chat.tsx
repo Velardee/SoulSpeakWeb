@@ -38,7 +38,7 @@ const Chat = () => {
         width: "100%",
       }}
     >
-      <Box flexGrow={1} overflow="auto">
+      <Box flexGrow={1} overflow="auto" padding={2}>
         {renderChat()}
       </Box>
       <Box position="sticky" bottom={0}>

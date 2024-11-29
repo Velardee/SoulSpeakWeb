@@ -16,7 +16,7 @@ export const initialUser: User = {
 }
 
 export const initialSelectedChat: Chat = {
-    uuid: undefined,
+    chatUuid: undefined,
     emotion: "",
     messages: [],
     userUuid: "",
@@ -201,14 +201,14 @@ export const useAuthStore = create<authType & StoreActions>()(
                 sendMessage: async (message, user) => {
                     const { addMessageTochat, createTodayChat, selectedChat } = get()
 
-                    if (!selectedChat.uuid || selectedChat.uuid === "") {
+                    if (!selectedChat.chatUuid || selectedChat.chatUuid === "") {
                         console.log("Creating chat")
                         createTodayChat(message)
                         return
                     }
 
                     try {
-                        const newMessage = await sendMessageFirebase(message, selectedChat.uuid, user)
+                        const newMessage = await sendMessageFirebase(message, selectedChat.chatUuid, user)
                         addMessageTochat(newMessage)
 
                     } catch (error) {
@@ -220,7 +220,7 @@ export const useAuthStore = create<authType & StoreActions>()(
 
 
                     //* user only can send messages if selected chat is today chat
-                    if (selectedChat?.uuid) {
+                    if (selectedChat?.chatUuid) {
                         const updatedMessages = Array.isArray(selectedChat.messages)
                             ? [...selectedChat.messages, message]
                             : [message];
@@ -235,7 +235,7 @@ export const useAuthStore = create<authType & StoreActions>()(
                     const { selectedChat, chats } = get()
 
                     //find selectedChat in chats
-                    const findedChat = chats.find((chat) => chat.uuid === selectedChat.uuid)
+                    const findedChat = chats.find((chat) => chat.chatUuid === selectedChat.chatUuid)
 
                     return findedChat
                 },

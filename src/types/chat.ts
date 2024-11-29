@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore"
 
 export interface Chat {
-    uuid: string | undefined
+    chatUuid: string | undefined
     emotion: string | undefined
     userUuid: string | undefined
     messages: Message[] | []
@@ -27,7 +27,7 @@ export type ChatActions = {
 export type Message = {
     uuid?: string
     message: string
-    createdAt: unknown
+    createdAt: Date
     sendedBy: UserType
 }
 

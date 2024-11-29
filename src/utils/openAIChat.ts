@@ -13,8 +13,7 @@ export async function generateAIMessage(message: string, emotion?: string) {
             model: "gpt-4o",
             messages: [
                 {
-                    role: 'system', content: `You are a helpful assistant, you can give some advice. ${emotion && `User feels ${emotion}.`} Format your responses as JavaScript-compatible text. 
-                    - Use appropriate line breaks (\n) to separate logical parts of the response.` },
+                    role: 'system', content: `You are a helpful assistant, you can give some advice. ${emotion && `User feels ${emotion}.`} Please format text with line breaks` },
                 {
                     role: 'user',
                     content: message
